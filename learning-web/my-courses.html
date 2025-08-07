@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khóa học của tôi</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Inter', sans-serif;
+    }
+    .my-courses-container {
+      max-width: 800px;
+      margin: 60px auto;
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .my-courses-container h1 {
+      font-size: 1.8rem;
+      color: #003366;
+      margin-bottom: 24px;
+    }
+    .course-item {
+      border-bottom: 1px solid #ddd;
+      padding: 12px 0;
+    }
+    .course-item:last-child {
+      border-bottom: none;
+    }
+    .course-item h3 {
+      color: #007acc;
+      margin-bottom: 6px;
+    }
+    .no-courses {
+      color: #888;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="my-courses-container">
+    <h1>Khóa học đã mua</h1>
+    <div id="course-list">
+      <!-- Danh sách sẽ hiển thị ở đây -->
+    </div>
+  </div>
+
+  <script>
+    // Bảo vệ trang
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      alert('Bạn cần đăng nhập để xem khóa học đã mua!');
+      window.location.href = 'login.html';
+    }
+
+    const courseList = document.getElementById('course-list');
+    const savedCourses = JSON.parse(localStorage.getItem('myCourses')) || [];
+
+    if (savedCourses.length === 0) {
+      courseList.innerHTML = '<p class=\"no-courses\">Bạn chưa mua khóa học nào.</p>';
+    } else {
+      savedCourses.forEach(course => {
+        const div = document.createElement('div');
+        div.className = 'course-item';
+        div.innerHTML = `<h3>${course.title}</h3><p>${course.desc}</p>`;
+        courseList.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
