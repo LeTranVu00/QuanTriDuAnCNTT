@@ -1,0 +1,17 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<h2>Kết quả tìm kiếm cho "{{ query }}"</h2>
+<div class="course-list">
+    {% for course in courses %}
+    <div class="course-card">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description|truncatewords:20 }}</p>
+        <p class="price">{{ course.price }} VNĐ</p>
+        <a href="/course/{{ course.id }}/">Xem chi tiết</a>
+    </div>
+    {% empty %}
+    <p>Không tìm thấy khóa học nào.</p>
+    {% endfor %}
+</div>
+{% endblock %}

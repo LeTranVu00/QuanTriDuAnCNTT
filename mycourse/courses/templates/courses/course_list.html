@@ -1,0 +1,62 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+    <h2>Danh sách khóa học</h2>
+    {% if selected_category %}
+    <div style="text-align: center; margin: 20px 0;">
+        <h2>📁 Danh mục: 
+            {% for choice in course_categories %}
+                {% if choice.0 == selected_category %}{{ choice.1 }}{% endif %}
+            {% endfor %}
+        </h2>
+        <a href="/" style="color: #3498db;">← Xem tất cả khóa học</a>
+    </div>
+    {% endif %}
+    
+    <h2>{% if selected_category %}Khóa học {{ selected_category }}{% else %}Danh sách khóa học{% endif %}</h2>
+    <div class="course-list">
+        {% for course in courses %}
+        <div class="course-card">
+            <h3>{{ course.title }}</h3>
+            <p>{{ course.description|truncatewords:20 }}</p>
+            <p class="price">{{ course.price }} VNĐ</p>
+
+                <!-- THÊM NÚT THÊM VÀO GIỎ HÀNG VÀ MUA NGAY -->
+            {% if user.is_authenticated %}
+                <div style="display: flex; gap: 10px; margin: 15px 0;">
+                    <form action="/add-to-cart/{{ course.id }}/" method="post" style="flex: 1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-add-cart">
+                            🛒 Thêm vào giỏ
+                        </button>
+                    </form>
+                    
+                    <form action="/checkout-direct/{{ course.id }}/" method="post" style="flex: 1;">
+                        {% csrf_token %}
+                        <button type="submit" style="
+                            background: #e74c3c;
+                            color: white;
+                            border: none;
+                            padding: 12px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            width: 100%;
+                            font-size: 1em;
+                        ">
+                            ⚡ Mua ngay
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="/accounts/login/" style="color: #3498db;">🔐 Đăng nhập</a> để mua khóa học
+                </p>
+            {% endif %}
+            
+            <a href="/course/{{ course.id }}/">Xem chi tiết</a>
+        </div>
+        {% empty %}
+        <p>Chưa có khóa học nào.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

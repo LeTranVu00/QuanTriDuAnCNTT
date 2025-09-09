@@ -1,0 +1,369 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="course-detail">
+    <h2>{{ course.title }}</h2>
+    <p><strong>Mô tả:</strong> {{ course.description }}</p>
+    <p class="price"><strong>Giá:</strong> {{ course.price }} VNĐ</p>
+    <p><strong>Ngày tạo:</strong> {{ course.created_at|date:"d/m/Y" }}</p>
+    
+    <!-- THÊM NÚT THÊM VÀO GIỎ HÀNG -->
+    {% if user.is_authenticated %}
+        <form action="/add-to-cart/{{ course.id }}/" method="post" style="margin: 20px 0;">
+            {% csrf_token %}
+            <button type="submit" style="
+                background: #27ae60;
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1.1em;
+                margin-right: 15px;
+            ">
+                🛒 Thêm vào giỏ hàng
+            </button>
+        </form>
+        
+        <form action="/checkout-direct/{{ course.id }}/" method="post">
+            {% csrf_token %}
+            <button type="submit" style="
+                background: #e74c3c;
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1.1em;
+            ">
+                ⚡ Mua ngay
+            </button>
+        </form>
+        <!-- THÊM NÚT LỘ TRÌNH HỌC -->
+{% if user.is_authenticated and user_has_purchased %}
+<a href="{% url 'learning_path' course.id %}" style="
+    display: inline-block;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+">
+    🎯 Lộ trình học
+</a>
+{% endif %}
+    {% else %}
+        <div style="background: #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p>⚠️ Bạn cần <a href="/accounts/login/" style="color: #e17055; font-weight: bold;">đăng nhập</a> để mua khóa học</p>
+        </div>
+    {% endif %}
+    
+    <a href="/">← Quay lại danh sách</a>
+</div>
+
+<!-- PHẦN ĐÁNH GIÁ MỚI THÊM VÀO -->
+<div class="reviews-section">
+    <h2>⭐ Đánh giá khóa học</h2>
+    
+    <!-- Thống kê đánh giá -->
+    <div class="rating-summary">
+        <div class="average-rating">
+            <span class="rating-number">{{ average_rating|floatformat:1 }}</span>
+            <div class="stars">
+                {% for i in "12345" %}
+                    {% if i|add:0 <= average_rating %}
+                        ⭐
+                    {% else %}
+                        🤍
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <span class="total-reviews">{{ total_reviews }} đánh giá</span>
+        </div>
+    </div>
+
+    <!-- Form đánh giá -->
+    {% if user.is_authenticated and user_has_purchased and not user_review %}
+    <div class="review-form">
+        <h3>Viết đánh giá của bạn</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="rating-input">
+                <label>Chọn số sao:</label>
+                <div class="star-rating">
+                    <input type="radio" name="rating" value="5" id="star5">
+                    <label for="star5">⭐</label>
+                    <input type="radio" name="rating" value="4" id="star4">
+                    <label for="star4">⭐</label>
+                    <input type="radio" name="rating" value="3" id="star3">
+                    <label for="star3">⭐</label>
+                    <input type="radio" name="rating" value="2" id="star2">
+                    <label for="star2">⭐</label>
+                    <input type="radio" name="rating" value="1" id="star1">
+                    <label for="star1">⭐</label>
+                </div>
+            </div>
+            
+            <div class="comment-input">
+                <textarea name="comment" placeholder="Chia sẻ trải nghiệm của bạn về khóa học này..." required rows="4"></textarea>
+            </div>
+            
+            <button type="submit" class="submit-review-btn">Gửi đánh giá</button>
+        </form>
+    </div>
+    {% elif user_review %}
+    <div class="your-review">
+        <h3>Đánh giá của bạn:</h3>
+        <div class="review-item">
+            <div class="review-header">
+                <strong>Bạn</strong>
+                <div class="stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= user_review.rating %}⭐{% else %}🤍{% endif %}
+                    {% endfor %}
+                </div>
+                <span>{{ user_review.created_at|date:"d/m/Y" }}</span>
+            </div>
+            <p>{{ user_review.comment }}</p>
+        </div>
+    </div>
+    {% elif user.is_authenticated and not user_has_purchased %}
+    <div class="purchase-required">
+        <p>📝 Bạn cần mua khóa học này trước khi đánh giá</p>
+    </div>
+    {% endif %}
+
+    <!-- Danh sách đánh giá -->
+    <div class="reviews-list">
+        {% for review in reviews %}
+        <div class="review-item">
+            <div class="review-header">
+                <strong>{{ review.user.username }}</strong>
+                <div class="stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}⭐{% else %}🤍{% endif %}
+                    {% endfor %}
+                </div>
+                <span>{{ review.created_at|date:"d/m/Y" }}</span>
+            </div>
+            <p>{{ review.comment }}</p>
+        </div>
+        {% empty %}
+        <p class="no-reviews">Chưa có đánh giá nào cho khóa học này.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* CSS cho phần đánh giá */
+.reviews-section {
+    margin-top: 50px;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.rating-summary {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.average-rating .rating-number {
+    font-size: 3em;
+    font-weight: bold;
+    color: #f39c12;
+    display: block;
+}
+
+.average-rating .stars {
+    font-size: 1.8em;
+    margin: 15px 0;
+}
+
+.average-rating .total-reviews {
+    color: #7f8c8d;
+    font-size: 1.1em;
+}
+
+.review-form {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin: 15px 0;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f39c12;
+    transform: scale(1.2);
+}
+
+.star-rating input:checked + label {
+    color: #f39c12;
+}
+
+.comment-input textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    margin: 15px 0;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.comment-input textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.submit-review-btn {
+    background: #27ae60;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.submit-review-btn:hover {
+    background: #2ecc71;
+    transform: translateY(-2px);
+}
+
+.reviews-list {
+    margin-top: 30px;
+}
+
+.review-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.review-header .stars {
+    color: #f39c12;
+    font-size: 1.2em;
+}
+
+.review-header span {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.no-reviews {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 40px;
+    font-style: italic;
+    background: white;
+    border-radius: 10px;
+}
+
+.your-review {
+    background: #e8f5e8;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #27ae60;
+}
+
+.purchase-required {
+    background: #fff3cd;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ffc107;
+    text-align: center;
+    color: #856404;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reviews-section {
+        padding: 20px;
+        margin-top: 30px;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .star-rating label {
+        font-size: 2em;
+        margin: 0 3px;
+    }
+}
+</style>
+
+<script>
+// Hiệu ứng cho rating stars
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating label');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const ratingValue = this.htmlFor.replace('star', '');
+            // Bỏ checked tất cả
+            document.querySelectorAll('.star-rating input').forEach(input => {
+                input.checked = false;
+            });
+            // Check star được click
+            document.getElementById(`star${ratingValue}`).checked = true;
+        });
+    });
+    
+    // Auto focus vào textarea khi click star
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            document.querySelector('textarea').focus();
+        });
+    });
+});
+</script>
+{% endblock %}

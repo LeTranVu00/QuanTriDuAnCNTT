@@ -1,0 +1,512 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1>👤 Dashboard của {{ user.username }}</h1>
+        <p>Chào mừng bạn trở lại! Đây là trang quản lý cá nhân của bạn.</p>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-content">
+                <h3>{{ user_stats.total_courses }}</h3>
+                <p>Khóa học đã mua</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+                <h3>{{ user_stats.total_spent|floatformat:0 }} VNĐ</h3>
+                <p>Tổng chi tiêu</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div class="stat-content">
+                <h3>{{ user_stats.courses_in_cart }}</h3>
+                <p>Khóa học trong giỏ</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>{{ user_stats.total_posts }}</h3>
+                <p>Bài viết forum</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>{{ user_stats.total_reviews }}</h3>
+                <p>Đánh giá đã viết</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin cá nhân -->
+    <div class="dashboard-section">
+        <h2>👤 Thông tin cá nhân</h2>
+        <div class="profile-info">
+            <div class="info-item">
+                <label>👤 Tên đăng nhập:</label>
+                <span>{{ user.username }}</span>
+            </div>
+            <div class="info-item">
+                <label>📧 Email:</label>
+                <span>{{ user.email|default:"Chưa cập nhật" }}</span>
+            </div>
+            <div class="info-item">
+                <label>📅 Ngày tham gia:</label>
+                <span>{{ user.date_joined|date:"d/m/Y" }}</span>
+            </div>
+            <div class="info-item">
+                <label>🔄 Lần đăng nhập cuối:</label>
+                <span>{{ user.last_login|date:"d/m/Y H:i"|default:"Chưa đăng nhập" }}</span>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="/accounts/logout/" class="btn-secondary">🚪 Đăng xuất</a>
+        </div>
+    </div>
+
+    <!-- Khóa học đã mua -->
+    <div class="dashboard-section">
+        <h2>🎓 Khóa học của tôi</h2>
+        {% if purchased_courses %}
+        <div class="course-grid">
+            {% for course in purchased_courses %}
+            <div class="course-card">
+                <h3>{{ course.title }}</h3>
+                <p>{{ course.description|truncatewords:15 }}</p>
+                <p class="price">{{ course.price }} VNĐ</p>
+                <div class="course-actions">
+                    <a href="/course/{{ course.id }}/" class="btn-primary">🎮 Học ngay</a>
+                    <a href="/course/{{ course.id }}/#reviews" class="btn-secondary">💬 Đánh giá</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 4em;">📚</div>
+            <h3>Bạn chưa có khóa học nào</h3>
+            <p>Khám phá các khóa học và bắt đầu học ngay hôm nay!</p>
+            <a href="/" class="btn-primary">Khám phá khóa học</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Giỏ hàng -->
+    {% if cart_courses %}
+    <div class="dashboard-section">
+        <h2>🛒 Giỏ hàng của tôi</h2>
+        <div class="course-grid">
+            {% for course in cart_courses %}
+            <div class="course-card">
+                <h3>{{ course.title }}</h3>
+                <p class="price">{{ course.price }} VNĐ</p>
+                <div class="course-actions">
+                    <a href="/checkout-direct/{{ course.id }}/" class="btn-primary">⚡ Mua ngay</a>
+                    <form action="{% url 'remove_from_cart' course.id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-danger">🗑️ Xóa</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/cart/" class="btn-primary">Xem giỏ hàng đầy đủ</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Lịch sử thanh toán -->
+    <div class="dashboard-section">
+        <h2>📊 Lịch sử thanh toán</h2>
+        {% if payment_history %}
+        <div class="payment-history">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Khóa học</th>
+                        <th>Số tiền</th>
+                        <th>Phương thức</th>
+                        <th>Ngày thanh toán</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payment_history %}
+                    <tr>
+                        <td>{{ payment.course.title }}</td>
+                        <td>{{ payment.amount }} VNĐ</td>
+                        <td>
+                            {% if payment.payment_method == 'momo' %}📱 MoMo
+                            {% elif payment.payment_method == 'banking' %}🏦 Ngân hàng
+                            {% else %}📦 COD
+                            {% endif %}
+                        </td>
+                        <td>{{ payment.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="status status-{{ payment.status }}">
+                                {% if payment.status == 'completed' %}✅ Hoàn thành
+                                {% elif payment.status == 'pending' %}⏳ Đang chờ
+                                {% else %}❌ Thất bại
+                                {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 4em;">💳</div>
+            <h3>Chưa có giao dịch nào</h3>
+            <p>Hãy mua khóa học đầu tiên của bạn!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bài viết forum của bạn -->
+    <div class="dashboard-section">
+        <h2>📝 Bài viết forum gần đây</h2>
+        {% if user_posts %}
+        <div class="posts-list">
+            {% for post in user_posts %}
+            <div class="post-item">
+                <h4><a href="{% url 'forum_detail' post.id %}">{{ post.title }}</a></h4>
+                <p>{{ post.content|truncatewords:20 }}</p>
+                <div class="post-meta">
+                    <span>{{ post.created_at|date:"d/m/Y" }}</span>
+                    <span>💬 {{ post.comments.count }} comments</span>
+                    <span>❤️ {{ post.like_count }} likes</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'forum_list' %}?author={{ user.username }}" class="btn-primary">Xem tất cả bài viết</a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 4em;">📝</div>
+            <h3>Chưa có bài viết nào</h3>
+            <p>Hãy chia sẻ kiến thức với cộng đồng!</p>
+            <a href="{% url 'forum_create' %}" class="btn-primary">Viết bài đầu tiên</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Đánh giá của bạn -->
+    <div class="dashboard-section">
+        <h2>⭐ Đánh giá gần đây</h2>
+        {% if user_reviews %}
+        <div class="reviews-list">
+            {% for review in user_reviews %}
+            <div class="review-item">
+                <div class="review-header">
+                    <strong>{{ review.course.title }}</strong>
+                    <div class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}⭐{% else %}🤍{% endif %}
+                        {% endfor %}
+                    </div>
+                    <span>{{ review.created_at|date:"d/m/Y" }}</span>
+                </div>
+                <p>{{ review.comment|truncatewords:30 }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 4em;">⭐</div>
+            <h3>Chưa có đánh giá nào</h3>
+            <p>Hãy đánh giá khóa học bạn đã mua!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5em;
+}
+
+.stat-content h3 {
+    font-size: 2em;
+    margin: 0;
+    color: #2c3e50;
+}
+
+.stat-content p {
+    margin: 5px 0 0 0;
+    color: #7f8c8d;
+}
+
+.dashboard-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.dashboard-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.course-card h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.course-card .price {
+    color: #e74c3c;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.course-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-primary, .btn-secondary, .btn-danger {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #7f8c8d;
+}
+
+.payment-history {
+    overflow-x: auto;
+}
+
+.payment-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-history th,
+.payment-history td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.payment-history th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.status-completed {
+    color: #27ae60;
+    font-weight: 500;
+}
+
+.status-pending {
+    color: #f39c12;
+    font-weight: 500;
+}
+
+.status-failed {
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+.posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.post-item {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 3px solid #3498db;
+}
+
+.post-item h4 {
+    margin: 0 0 10px 0;
+}
+
+.post-item h4 a {
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+.post-item h4 a:hover {
+    color: #3498db;
+}
+
+.post-meta {
+    display: flex;
+    gap: 15px;
+    color: #7f8c8d;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.review-item {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 3px solid #f39c12;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.review-header .stars {
+    color: #f39c12;
+}
+
+.review-header span {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .payment-history {
+        font-size: 0.9em;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+</style>
+{% endblock %}

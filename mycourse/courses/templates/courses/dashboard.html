@@ -1,0 +1,18 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<h2>👤 Dashboard của {{ user.username }}</h2>
+
+<h3>Khóa học của tôi:</h3>
+<div class="course-list">
+    {% for course in enrolled_courses %}
+    <div class="course-card">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description|truncatewords:15 }}</p>
+        <a href="/course/{{ course.id }}/">Tiếp tục học →</a>
+    </div>
+    {% empty %}
+    <p>Bạn chưa tham gia khóa học nào.</p>
+    {% endfor %}
+</div>
+{% endblock %}

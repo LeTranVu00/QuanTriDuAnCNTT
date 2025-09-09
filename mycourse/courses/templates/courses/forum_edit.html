@@ -1,0 +1,215 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="forum-edit-container">
+    <div class="forum-edit-header">
+        <h1>✏️ Chỉnh sửa bài viết</h1>
+        <a href="{% url 'forum_detail' post.id %}" class="btn-back">← Quay lại bài viết</a>
+    </div>
+
+    <div class="edit-form-container">
+        <form method="post" class="forum-edit-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="title">📌 Tiêu đề bài viết *</label>
+                <input type="text" id="title" name="title" value="{{ post.title }}" required 
+                       placeholder="Nhập tiêu đề..." maxlength="200">
+                <small class="char-count">{{ post.title.length }}/200 ký tự</small>
+            </div>
+
+            <div class="form-group">
+                <label for="content">📝 Nội dung bài viết *</label>
+                <textarea id="content" name="content" required 
+                          placeholder="Nội dung bài viết..." rows="12">{{ post.content }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">🏷️ Tags</label>
+                <input type="text" id="tags" name="tags" value="{{ post.tags }}"
+                       placeholder="python, django, web-development">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">💾 Lưu thay đổi</button>
+                <a href="{% url 'forum_detail' post.id %}" class="btn-cancel">❌ Hủy</a>
+                <button type="button" class="btn-delete" onclick="confirmDelete()">🗑️ Xóa bài</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.forum-edit-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.forum-edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.forum-edit-header h1 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.edit-form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.forum-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 300px;
+    line-height: 1.6;
+}
+
+.char-count {
+    text-align: right;
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+}
+
+.btn-cancel {
+    background: #95a5a6;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #7f8c8d;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .forum-edit-container {
+        padding: 15px;
+    }
+    
+    .edit-form-container {
+        padding: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-save, .btn-cancel, .btn-delete {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const charCount = document.querySelector('.char-count');
+    
+    // Đếm ký tự tiêu đề
+    titleInput.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = `${count}/200 ký tự`;
+        
+        if (count > 180) {
+            charCount.style.color = '#e74c3c';
+        } else {
+            charCount.style.color = '#7f8c8d';
+        }
+    });
+});
+
+function confirmDelete() {
+    if (confirm('Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.')) {
+        // Chuyển hướng đến trang xóa bài viết
+        window.location.href = "{% url 'admin:courses_forumpost_delete' post.id %}";
+    }
+}
+</script>
+{% endblock %}

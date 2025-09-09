@@ -1,0 +1,361 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="forum-create-container">
+    <div class="forum-create-header">
+        <h1>📝 Viết Bài Mới</h1>
+        <p>Chia sẻ kiến thức, kinh nghiệm với cộng đồng lập trình viên</p>
+        <a href="{% url 'forum_list' %}" class="btn-back">← Quay lại diễn đàn</a>
+    </div>
+
+    <div class="create-form-container">
+        <form method="post" class="forum-create-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="title">📌 Tiêu đề bài viết *</label>
+                <input type="text" id="title" name="title" required 
+                       placeholder="Nhập tiêu đề hấp dẫn..." 
+                       maxlength="200">
+                <small class="char-count">0/200 ký tự</small>
+            </div>
+
+            <div class="form-group">
+                <label for="content">📝 Nội dung bài viết *</label>
+                <textarea id="content" name="content" required 
+                          placeholder="Chia sẻ nội dung chi tiết của bạn..." 
+                          rows="12"></textarea>
+                <small>Hỗ trợ định dạng Markdown cơ bản</small>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">🏷️ Tags (tùy chọn)</label>
+                <input type="text" id="tags" name="tags" 
+                       placeholder="python, django, web-development (cách nhau bằng dấu phẩy)">
+                <small>Ví dụ: python, django, javascript, html-css</small>
+            </div>
+
+            <div class="form-tips">
+                <h3>💡 Mẹo viết bài hay:</h3>
+                <ul>
+                    <li>Tiêu đề rõ ràng, hấp dẫn</li>
+                    <li>Nội dung chi tiết, có ví dụ minh họa</li>
+                    <li>Chia nhỏ thành các phần với heading</li>
+                    <li>Đính kèm code nếu có (dùng ``` để format)</li>
+                    <li>Thêm tags phù hợp để dễ tìm kiếm</li>
+                </ul>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-publish">🚀 Đăng bài ngay</button>
+                <button type="button" class="btn-preview">👀 Xem trước</button>
+                <a href="{% url 'forum_list' %}" class="btn-cancel">❌ Hủy bỏ</a>
+            </div>
+        </form>
+
+        <!-- Preview Section -->
+        <div class="preview-section" style="display: none;">
+            <h3>👀 Xem trước bài viết:</h3>
+            <div class="preview-content">
+                <h2 id="preview-title">Tiêu đề bài viết</h2>
+                <div id="preview-content">Nội dung sẽ hiển thị ở đây...</div>
+            </div>
+            <div class="preview-actions">
+                <button type="button" class="btn-edit">✏️ Chỉnh sửa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.forum-create-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.forum-create-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.forum-create-header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.btn-back {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-back:hover {
+    text-decoration: underline;
+}
+
+.create-form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.forum-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+.char-count {
+    text-align: right;
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.form-group small {
+    color: #7f8c8d;
+    font-size: 0.9em;
+}
+
+.form-tips {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.form-tips h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.form-tips ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #555;
+}
+
+.form-tips li {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.btn-publish {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-publish:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+}
+
+.btn-preview {
+    background: #3498db;
+    color: white;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-preview:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    background: #95a5a6;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #7f8c8d;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.preview-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 30px;
+    border: 2px dashed #ddd;
+}
+
+.preview-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+#preview-title {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.preview-actions {
+    text-align: center;
+}
+
+.btn-edit {
+    background: #f39c12;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-edit:hover {
+    background: #e67e22;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .forum-create-container {
+        padding: 15px;
+    }
+    
+    .create-form-container {
+        padding: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-publish,
+    .btn-preview,
+    .btn-cancel {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const charCount = document.querySelector('.char-count');
+    const previewBtn = document.querySelector('.btn-preview');
+    const editBtn = document.querySelector('.btn-edit');
+    const previewSection = document.querySelector('.preview-section');
+    const form = document.querySelector('.forum-create-form');
+    
+    // Đếm ký tự tiêu đề
+    titleInput.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = `${count}/200 ký tự`;
+        
+        if (count > 180) {
+            charCount.style.color = '#e74c3c';
+        } else {
+            charCount.style.color = '#7f8c8d';
+        }
+    });
+    
+    // Xem trước bài viết
+    previewBtn.addEventListener('click', function() {
+        const title = titleInput.value || 'Tiêu đề bài viết';
+        const content = contentInput.value || 'Nội dung sẽ hiển thị ở đây...';
+        
+        document.getElementById('preview-title').textContent = title;
+        document.getElementById('preview-content').textContent = content;
+        
+        previewSection.style.display = 'block';
+        form.style.display = 'none';
+    });
+    
+    // Quay lại chỉnh sửa
+    editBtn.addEventListener('click', function() {
+        previewSection.style.display = 'none';
+        form.style.display = 'flex';
+    });
+    
+    // Validation trước khi submit
+    form.addEventListener('submit', function(e) {
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+        
+        if (!title) {
+            e.preventDefault();
+            alert('Vui lòng nhập tiêu đề bài viết!');
+            titleInput.focus();
+            return;
+        }
+        
+        if (!content) {
+            e.preventDefault();
+            alert('Vui lòng nhập nội dung bài viết!');
+            contentInput.focus();
+            return;
+        }
+        
+        if (title.length > 200) {
+            e.preventDefault();
+            alert('Tiêu đề không được vượt quá 200 ký tự!');
+            titleInput.focus();
+            return;
+        }
+    });
+});
+</script>
+{% endblock %}

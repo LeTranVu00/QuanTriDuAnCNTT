@@ -1,0 +1,178 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <h1>📞 Liên Hệ</h1>
+    
+    <div class="contact-content">
+        <div class="contact-info">
+            <h2>Thông tin liên hệ</h2>
+            
+            <div class="contact-item">
+                <span class="contact-icon">📧</span>
+                <div>
+                    <h3>Email</h3>
+                    <p>vult8073@ut.edu.vn</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <span class="contact-icon">📞</span>
+                <div>
+                    <h3>Điện thoại</h3>
+                    <p>+84 123 456 789</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <span class="contact-icon">📍</span>
+                <div>
+                    <h3>Địa chỉ</h3>
+                    <p>Lê Hồng Phong, Hoài Hảo, Hoài Nhơn, Gia Lai</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <span class="contact-icon">🕒</span>
+                <div>
+                    <h3>Giờ làm việc</h3>
+                    <p>Thứ 2 - Thứ 6: 8:00 - 18:00</p>
+                    <p>Thứ 7: 8:00 - 12:00</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-form">
+            <h2>Gửi tin nhắn cho chúng tôi</h2>
+            
+            <form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label for="name">Họ và tên *</label>
+        <input type="text" id="name" name="name" value="{{ name|default:'' }}" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" value="{{ email|default:'' }}" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="phone">Số điện thoại</label>
+        <input type="tel" id="phone" name="phone" value="{{ phone|default:'' }}">
+    </div>
+    
+    <div class="form-group">
+        <label for="message">Nội dung *</label>
+        <textarea id="message" name="message" rows="5" required>{{ message|default:'' }}</textarea>
+    </div>
+    
+    <button type="submit" class="submit-btn">📤 Gửi tin nhắn</button>
+</form>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    margin-top: 40px;
+}
+
+.contact-info h2, .contact-form h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.contact-icon {
+    font-size: 1.5em;
+    min-width: 40px;
+}
+
+.contact-item h3 {
+    color: #e74c3c;
+    margin: 0 0 5px 0;
+}
+
+.contact-item p {
+    margin: 0;
+    color: #555;
+}
+
+.contact-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.submit-btn {
+    background: #27ae60;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: #2ecc71;
+}
+
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

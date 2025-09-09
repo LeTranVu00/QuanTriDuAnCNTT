@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Lập trình Online</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        nav {
+            background: #34495e;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+        }
+        
+        nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .user-info {
+            color: white;
+        }
+        
+        /* Header */
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .hero-banner h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            margin: 30px auto;
+            max-width: 600px;
+            display: flex;
+            justify-content: center; /* Thêm dòng này để căn giữa */
+            width: 100%; /* Thêm dòng này để đảm bảo chiều rộng */
+        }
+
+        .search-bar form {
+            display: flex;
+            width: 100%; /* Đảm bảo form chiếm toàn bộ chiều rộng */
+            max-width: 600px; /* Giới hạn chiều rộng tối đa */
+        }
+
+        .search-bar input {
+            padding: 15px;
+            flex: 1; /* Cho phép input mở rộng */
+            border: none;
+            border-radius: 25px 0 0 25px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            padding: 15px 25px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            font-size: 16px;
+            white-space: nowrap; /* Ngăn chữ xuống dòng */
+        }
+        
+        .search-bar button:hover {
+            background: #c0392b;
+        }
+        
+        /* Content */
+        .content {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Course List */
+        .course-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 320px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .course-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .course-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin: 15px 0;
+        }
+        
+        .btn-add-cart {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            margin: 10px 0;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-add-cart:hover {
+            background: #2ecc71;
+        }
+        
+        .course-card a {
+            display: block;
+            text-align: center;
+            color: #3498db;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .course-card a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Messages */
+        .messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .message {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .message.error {
+            background: #e74c3c;
+        }
+        
+        .message.info {
+            background: #3498db;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .hero-banner h1 {
+                font-size: 2.2em;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-bar input {
+                border-radius: 25px;
+                margin-bottom: 10px;
+            }
+            
+            .search-bar button {
+                border-radius: 25px;
+            }
+            
+            .course-card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+<nav>
+    <div>
+        <a href="/" style="font-weight: bold;">🏠 Trang chủ</a>
+        <a href="/about/">📖 Giới thiệu</a>
+        <a href="/contact/">📞 Liên hệ</a>
+        
+        <!-- Menu Diễn đàn với dropdown -->
+        <div class="nav-dropdown">
+            <a href="/forum/" class="nav-link">💬 Diễn đàn</a>
+            <div class="dropdown-content">
+                <a href="/forum/">📋 Tất cả bài viết</a>
+                <a href="/forum/create/">📝 Viết bài mới</a>
+                <a href="/forum/?tag=python">🐍 Python</a>
+                <a href="/forum/?tag=django">🌐 Django</a>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <a href="/cart/">🛒 Giỏ hàng</a>
+            <a href="/my-courses/">🎓 Khóa học của tôi</a>
+            <a href="/my-dashboard/">📊 Dashboard</a>
+        {% endif %}
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+            <span class="user-info">Xin chào, {{ user.username }}!</span>
+            <a href="/accounts/logout/">🚪 Đăng xuất</a>
+        {% else %}
+            <a href="/accounts/login/">🔐 Đăng nhập</a>
+            <a href="/accounts/signup/">📝 Đăng ký</a>
+        {% endif %}
+    </div>
+</nav>
+
+<style>
+/* CSS cho dropdown menu */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: white;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background: #f8f9fa;
+}
+
+.nav-dropdown:hover .dropdown-content {
+    display: block;
+}
+</style>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h1>🎓 Học Lập Trình Từ Con Số 0</h1>
+        <p>Khám phá các khóa học chất lượng cao với giảng viên hàng đầu</p>
+        
+        <div class="search-bar">
+            <form action="/search/" method="get">
+                <input type="text" name="q" placeholder="Tìm kiếm khóa học...">
+                <button type="submit">🔍 Tìm kiếm</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories Slider -->
+<div class="categories-slider">
+    <h2 style="text-align: center; margin: 40px 0 20px 0;">📚 Danh mục khóa học</h2>
+    <div class="categories">
+        <a href="/?category=python" class="category-card {% if selected_category == 'python' %}active{% endif %}">
+            <span style="font-size: 2.5em;">🐍</span>
+            <h3>Python</h3>
+            <p>{{ python_count }} khóa học</p>
+        </a>
+        
+        <a href="/?category=django" class="category-card {% if selected_category == 'django' %}active{% endif %}">
+            <span style="font-size: 2.5em;">🌐</span>
+            <h3>Django</h3>
+            <p>{{ django_count }} khóa học</p>
+        </a>
+        
+        <a href="/?category=web" class="category-card {% if selected_category == 'web' %}active{% endif %}">
+            <span style="font-size: 2.5em;">💻</span>
+            <h3>Web Development</h3>
+            <p>{{ web_count }} khóa học</p>
+        </a>
+        
+        <a href="/?category=data" class="category-card {% if selected_category == 'data' %}active{% endif %}">
+            <span style="font-size: 2.5em;">📊</span>
+            <h3>Data Science</h3>
+            <p>{{ data_count }} khóa học</p>
+        </a>
+        
+        <a href="/" class="category-card {% if not selected_category %}active{% endif %}">
+            <span style="font-size: 2.5em;">🎯</span>
+            <h3>Tất cả</h3>
+            <p>{{ all_count }} khóa học</p>
+        </a>
+    </div>
+</div>
+
+<style>
+.categories {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    min-width: 180px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-decoration: none;
+    color: white;
+}
+
+.category-card.active {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+}
+
+.category-card h3 {
+    margin: 10px 0 5px 0;
+    font-size: 1.2em;
+}
+
+.category-card p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .categories {
+        gap: 10px;
+    }
+    
+    .category-card {
+        min-width: 140px;
+        padding: 20px;
+    }
+}
+</style>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            var messages = document.querySelectorAll('.message');
+            messages.forEach(function(message) {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    message.remove();
+                }, 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

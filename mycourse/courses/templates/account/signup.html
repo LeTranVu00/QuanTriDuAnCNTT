@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Học Lập Trình</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+        
+        .signup-header {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .signup-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .signup-header p {
+            opacity: 0.8;
+        }
+        
+        .signup-form {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn-signup {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .signup-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .signup-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .signup-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .password-rules {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .password-rules ul {
+            margin-left: 20px;
+        }
+        
+        @media (max-width: 480px) {
+            .signup-container {
+                margin: 10px;
+            }
+            
+            .signup-header {
+                padding: 20px;
+            }
+            
+            .signup-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>📝 Đăng ký</h1>
+            <p>Tham gia cộng đồng học lập trình của chúng tôi</p>
+        </div>
+        
+        <div class="signup-form">
+            <div class="password-rules">
+                <strong>Yêu cầu mật khẩu:</strong>
+                <ul>
+                    <li>Ít nhất 8 ký tự</li>
+                    <li>Không được quá giống thông tin cá nhân</li>
+                    <li>Không được hoàn toàn bằng số</li>
+                </ul>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" placeholder="Chọn tên đăng nhập" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Nhập email của bạn" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password1">Mật khẩu</label>
+                    <input type="password" id="password1" name="password1" placeholder="Tạo mật khẩu" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password2">Xác nhận mật khẩu</label>
+                    <input type="password" id="password2" name="password2" placeholder="Nhập lại mật khẩu" required>
+                </div>
+                
+                <button type="submit" class="btn-signup">🎉 Đăng ký ngay</button>
+            </form>
+            
+            <div class="signup-links">
+                <p>Đã có tài khoản? <a href="/accounts/login/">Đăng nhập ngay</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
